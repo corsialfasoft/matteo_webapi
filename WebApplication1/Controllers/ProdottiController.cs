@@ -4,21 +4,23 @@ using System.Linq;
 using System.Net;
 using System.Net.Http;
 using System.Web.Http;
-
+using  DraxManUC001.Models ;
 namespace WebApplication1.Controllers {
-	public class ValuesController : ApiController {
+	public class ProdottiController : ApiController {
+		IDomainModel dm = new DomainModel();
 		// GET api/values
-		public IEnumerable<string> Get() {
-			return new string[] { "value1","value2" };
+		public IEnumerable<Prodotto> Get() {
+			return dm.Search("");
 		}
 
 		// GET api/values/5
-		public string Get(int id) {
-			return "value";
+		public Prodotto Get(int id) {
+			return dm.Search(id);
 		}
 
 		// POST api/values
-		public void Post([FromBody]string value) {
+		public void Post([FromBody]Prodotto input) {
+			dm.AggiungiProdotto(input);
 		}
 
 		// PUT api/values/5
@@ -27,6 +29,7 @@ namespace WebApplication1.Controllers {
 
 		// DELETE api/values/5
 		public void Delete(int id) {
+			dm.RimuoviProdotto(id);
 		}
 	}
 }
