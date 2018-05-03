@@ -37,7 +37,7 @@ namespace DraxManUC001.Models {
 		public void AggiungiProdotto(Prodotto input){
 			using(db= new RICHIESTEEntities()){
 				db.AggiungiProdotto(input.Descrizione,input.Giacenza);	
-			}
+			}//
 		}
 		public void RimuoviProdotto(int id){
 			using(db= new RICHIESTEEntities()){
@@ -53,7 +53,7 @@ namespace DraxManUC001.Models {
 				return null;
 			}
 		}
-
+	
 		public List<Prodotto> Search(string des) {
 			using (db = new RICHIESTEEntities()) {
 				var query = from pro in db.ProdottiSet
