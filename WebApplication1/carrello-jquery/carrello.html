@@ -13,55 +13,98 @@
 
     <script>
         var uri = '../api/Prodotti';
+        function LoadProdotti() {
+            $('#Prodotto').empty();
+            $.get(uri)
+                .done(function (data) {
+                    $.each(data, function (key, item) {
+                        $('#Prodotto').append('<li class="list-group-item" onclick=LoadProdotto(' + item.Id + ')>' + item.Descrizione + '</li>');
+                    });
+                });
+        }
         $(document).ready(
             function () {
-                $("#Nuovo").hide();
-                function LoadProdotti() {
-                    $('#Prodotto').empty();
-                    $.get(uri)
-                        .done(function (data) {
-                            $.each(data, function (key, item) {
-                                $('#Prodotto').append('<li class="list-group-item" onclick=LoadProdotti(' + item.Id + ')>' + item.Descrizione + '</li>');
-                            });
-                        });
-                }
                 LoadProdotti();
                 $("#frmNuovo").submit(function (event) {
                     event.preventDefault();
                     var $form = $(this)
                     var Prodotto = {};
                     var url = $form.attr("action");
-                    Prodotto.Id = $form.find("input[id='_id']").val();
-                    Prodotto.Descrizione = $form.find("input[descrizione='_descrizione']").val();
-                    Prodotto.Quantita = $form.find("input[quantita='_quantita']").val();
+                    Prodotto.Descrizione = $form.find("textarea[name='_descrizione']").val();
+                    Prodotto.Giacenza = $form.find("input[name='_quantita']").val();
                     var posting = $.post(url, Prodotto);
                     posting.done(function (data) {
                         LoadProdotti();
-                        //$("#Message").append(data);
                     });
                 });
-            });  
-       /* function ElencoProdotti() {
-            $("#Nuovo").hide();
-            $("#Elenco").show();
-            $("#TabNuovo").removeClass("active");
-            $("#TabElenco").addClass("active");
-        }*/
-        
+            });         
+        function LoadProdotto(id) {
+            $.get(uri + '/' + id)
+                .done(function (data) {
+                    $('#DettaglioProdotto').html(
+                        '<div class="panel panel-primary">' +
+                        '<div class="panel-heading">' + data.Id + '</div>' +
+                        '<div class="panel-body"> <p><small>' + data.Descrizione + '</small></p>' +
+                        '<div class="form-group"><label>Quantità</label> ' +
+                        '<input disabled type="text" class="form-control" value="' + data.Quantita + '">' +                        
+                        '<a class="btn btn-warning" onclick=Remove(' + id + ') role="button">Elimina</a>' +
+                        '</div>' +
+                        '</div > ');                   
+                });
+        }
+        function Remove(id) {
+            $.ajax({
+                url: uri + '/' + id,
+                method: "DELETE",
+                success: function (data) {
+                    $('#DettaglioProdotto').hide();
+                    LoadProdotti();
+                }
+            }).fail(function (data) {
+                $("body").prepend(document.createTextNode("Errore!"));
+            });
+        } 
     </script>
-
 </head>
 <body>
-
     <div class="container">
         <div class="page-header">
             <h1>Prodotti!</h1>
         </div>
     </div>
     <div>
-        <ul id="Prodotto" class="list-group">
-          
-        </ul>
+        <ul id="Prodotto" class="list-group"></ul>
+    </div>
+    <div id="Elenco">
+        <div class="row">
+            <div class="col-md-6">
+                <ul class="list-group" id="Prodotto"></ul>
+            </div>
+            <div class="col-md-6">
+                <div id="DettaglioProdotto"></div>
+            </div>
+        </div>
+    </div>
+    <div id="Nuovo" class="sfondoCorso">
+        <div class="row">
+            <div class="nuovo">
+                <div class="panel panel-primary">
+                    <div class="panel-heading">Inserimento nuovo Prodotto</div>
+                    <div class="panel-body form-group">
+                        <form action="/api/Prodotti" id="frmNuovo" class="formStyle" method="post">                            
+
+                            <label>Descrizione</label>
+                            <textarea class="form-control" name="_descrizione" rows="3" cols="50" maxlength="140" required="" placeholder="Inserisci qui la descrizione..."></textarea>
+                                                      
+                            <label>Quantità</label>
+                            <input class="form-control" rows="3" cols="50" maxlength="140" name="_quantità" placeholder="Quantità" required="">
+
+                            <input type="submit" class="btn btn-default" value="Inserisci prodotto">
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
     </div>
 </body>
 </html>
